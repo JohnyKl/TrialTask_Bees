@@ -8,11 +8,13 @@ namespace TrialTask_Bees
     [Serializable]
     public class WorkerBee : Bee
     {
-        public WorkerBee() { }
-        public WorkerBee(int counter)
+        public WorkerBee() : this(counter) { }
+        public WorkerBee(int id) : base(id)
         {
-            Name = string.Format("Worker Bee{0}", counter);
-            Type = BeeTypes.WorkerBee;
-        }        
+            counter++;
+            Type = BeeTypes.Worker;
+        }
+
+        private static int counter = 0;
     }
 }

@@ -8,11 +8,14 @@ namespace TrialTask_Bees
     [Serializable]
     public class DroneBee : Bee
     {
-        public DroneBee() { }
-        public DroneBee(int counter)
+        public DroneBee() : this(counter) { }
+
+        public DroneBee(int id) : base(id)
         {
-            Name = string.Format("Drone Bee{0}", counter);
-            Type = BeeTypes.DroneBee;
-        }                
+            counter++;
+            Type = BeeTypes.Drone;
+        }             
+           
+        private static int counter = 0;
     }
 }

@@ -8,14 +8,14 @@ namespace TrialTask_Bees
     [Serializable]
     public class QueenBee : Bee
     {
-        public QueenBee() { }
-        public QueenBee(int counter)
+        public QueenBee() : this(counter) { }
+        public QueenBee(int id) : base(id)
         {
             if (counter > 1) throw new ArgumentOutOfRangeException("Only one Queen Bee is allowed!");
-            
-            Name = string.Format("Queen Bee{0}", counter);
-            Type = BeeTypes.QueenBee;
+            counter++;
+            Type = BeeTypes.Queen;
         }
-        
+
+        private static int counter = 0;
     }
 }

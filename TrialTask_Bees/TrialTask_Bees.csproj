@@ -112,6 +112,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="bees\BeesFactory.cs" />
     <Compile Include="bees\Bee.cs" />
     <Compile Include="BeesGame.cs" />
     <Compile Include="Default.aspx.cs">

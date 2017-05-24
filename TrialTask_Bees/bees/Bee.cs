@@ -15,12 +15,27 @@ namespace TrialTask_Bees
     {
         public enum BeeTypes
         {
-            DroneBee, WorkerBee, QueenBee
+            Drone, Worker, Queen
         }
-        
+
+        public Bee() : this(0) { }
+
+        public Bee(int id)
+        {
+            Id = id;
+        }
+
         public string Name
         {
-            get { return _name; }
+            get
+            {
+                if(string.IsNullOrWhiteSpace(_name))
+                {
+                    _name = string.Format("{0} Bee{1}", Enum.GetName(typeof(BeeTypes), Type), Id); 
+                }
+
+                return _name;
+            }
             set { _name = value; }
         }
         
@@ -75,6 +90,12 @@ namespace TrialTask_Bees
             set { _type = value; }
         }
 
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {1}", Name, Health);
@@ -88,6 +109,7 @@ namespace TrialTask_Bees
         private string _name;
         private int _health;
         private int _hitPoints;
+        private int _id;
         private BeeTypes _type;
     }
 }

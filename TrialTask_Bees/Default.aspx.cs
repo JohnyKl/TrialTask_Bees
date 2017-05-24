@@ -68,9 +68,9 @@ namespace TrialTask_Bees
             
             game.Restart();
 
-            CreateBeesByTypes(Bee.BeeTypes.DroneBee, tbDroneBeeNumber, tbDroneBeeHealth, tbDroneBeeHitPoints);
-            CreateBeesByTypes(Bee.BeeTypes.WorkerBee, tbWorkerBeeNumber, tbWorkerBeeHealth, tbWorkerBeeHitPoints);
-            CreateBeesByTypes(Bee.BeeTypes.QueenBee, tbQueenBeeNumber, tbQueenBeeHealth, tbQueenBeeHitPoints);
+            CreateBeesByTypes<QueenBee>(tbDroneBeeNumber, tbDroneBeeHealth, tbDroneBeeHitPoints);
+            CreateBeesByTypes<DroneBee>(tbWorkerBeeNumber, tbWorkerBeeHealth, tbWorkerBeeHitPoints);
+            CreateBeesByTypes<WorkerBee>(tbQueenBeeNumber, tbQueenBeeHealth, tbQueenBeeHitPoints);
 
             game.Bees.Reverse();
 
@@ -79,15 +79,15 @@ namespace TrialTask_Bees
             btnHit.Enabled = true;
         }
 
-        private void CreateBeesByTypes(Bee.BeeTypes type, TextBox tbNumber, TextBox tbHealth, TextBox tbHitPoints)
+        private void CreateBeesByTypes<T>(TextBox tbNumber, TextBox tbHealth, TextBox tbHitPoints) where T : Bee
         {
             try
             {
                 int number = int.Parse(tbNumber.Text);
                 int health = int.Parse(tbHealth.Text);
                 int hitPoints = int.Parse(tbHitPoints.Text);
-
-                game.CreateBee(type, number, health, hitPoints);
+                
+                game.CreateBee<T>(number, health, hitPoints);
             }
             catch(Exception ex)
             {

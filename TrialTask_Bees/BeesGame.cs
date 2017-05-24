@@ -27,31 +27,17 @@ namespace TrialTask_Bees
         /// <summary>
         /// Create a new bee of a given type with specified health points and hit points
         /// </summary>
-        public void CreateBee(Bee.BeeTypes type, int count, int health, int hitPoints)
+        public void CreateBee<T>(int count, int health, int hitPoints) where T : Bee
         {
             while (count > 0)
             {
-                Bee _newBee;
-
-                switch (type)
-                {
-                    case Bee.BeeTypes.QueenBee:
-                        _newBee = new QueenBee(count); break;
-                    case Bee.BeeTypes.WorkerBee:
-                        _newBee = new WorkerBee(count); break;
-                    case Bee.BeeTypes.DroneBee:
-                    default:
-                        _newBee = new DroneBee(count); break;
-                }
-
-                _newBee.Health = health;
-                _newBee.HitPoints = hitPoints;
-
+                Bee _newBee = bees.BeesFactory.CreateBee<T>(count, health, hitPoints);
+                                
                 Bees.Add(_newBee);
                 count--;
             }
         }
-        
+
         public List<Bee> Bees
         {
             get
@@ -148,7 +134,7 @@ namespace TrialTask_Bees
 
             if (!Bees[randIndex].IsAlive)
             {
-                if (Bees[randIndex].Type == Bee.BeeTypes.QueenBee)
+                if (Bees[randIndex].Type == Bee.BeeTypes.Queen)
                 {
                     TotalKilled += Bees.Count;
                     Bees.Clear();
