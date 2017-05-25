@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml.Serialization;
+using TrialTask_Bees.Interfaces;
 
 namespace TrialTask_Bees
 {
@@ -11,7 +12,7 @@ namespace TrialTask_Bees
     [XmlInclude(typeof(QueenBee))]
     [XmlInclude(typeof(WorkerBee))]
     [XmlInclude(typeof(DroneBee))]
-    public abstract class Bee
+    public abstract class Bee : INumerable
     {
         public enum BeeTypes
         {

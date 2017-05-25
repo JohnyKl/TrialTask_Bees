@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Web;
 using System.Xml.Serialization;
+using TrialTask_Bees.DataSaving;
+using TrialTask_Bees.Interfaces;
 
 namespace TrialTask_Bees
 {
     [Serializable]
-    public class BeesGame
+    public class BeesGame : INumerable, IMemorySaveable<BeesGame>
     {
         public BeesGame()
         {
@@ -101,21 +101,7 @@ namespace TrialTask_Bees
                 _id = value;
             }
         }
-
-        [XmlIgnore]
-        public static InMemoryRepository Repo
-        {
-            get
-            {
-                return repo;
-            }
-
-            set
-            {
-                repo = value;
-            }
-        }
-
+        
         public bool IsGameOver()
         {
             return Bees.Count == 0;
@@ -171,30 +157,34 @@ namespace TrialTask_Bees
             HitCount = 0;
         }
 
+        public void Save(IDataSaverController controller)
+        {
+            controller.Save(this);
+        }
+
         /// <summary>
         /// Create a copy of the instance in a memory, save it to the file, add it to the in-memory repository.
         /// </summary>
-        public void Save(string fileName)
-        {
-            Repo.Add(this);
+        //public void Save(string fileName)
+        //{
+        //    Repo.Add(this);
 
-            int counter = 1;
+        //    int counter = 1;
 
-            while(File.Exists(string.Format(fileName, counter)))
-            {
-                counter++;
-            }
+        //    while(File.Exists(string.Format(fileName, counter)))
+        //    {
+        //        counter++;
+        //    }
 
-            using (FileStream fSteam = File.Create(string.Format(fileName, counter)))
-            {
-                XmlSerializer xmlSerializer =
-                    new XmlSerializer(typeof(BeesGame));
-                xmlSerializer.Serialize(fSteam, this);
-            }
+        //    using (FileStream fSteam = File.Create(string.Format(fileName, counter)))
+        //    {
+        //        XmlSerializer xmlSerializer =
+        //            new XmlSerializer(typeof(BeesGame));
+        //        xmlSerializer.Serialize(fSteam, this);
+        //    }
 
-            SavedCopy = Copy();
-        }
-
+        //    SavedCopy = Copy();
+        //}
         public BeesGame Copy()
         {
             var formatter = new BinaryFormatter();
@@ -213,8 +203,7 @@ namespace TrialTask_Bees
         private Random _rand = new Random(DateTime.Now.Millisecond);
         private List<Bee> _bees = new List<Bee>();
         private BeesGame _savedCopy;
-
-        private static InMemoryRepository repo = new InMemoryRepository();
+        
         private static int _idCounter = 0;
     }
 }

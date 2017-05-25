@@ -6,6 +6,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using TrialTask_Bees.DataSaving;
+using TrialTask_Bees.Repository;
 
 namespace TrialTask_Bees
 {
@@ -58,7 +60,9 @@ namespace TrialTask_Bees
                 Directory.CreateDirectory(directoryPath);
             }
 
-            game.Save(directoryPath + "/bees_game{0}.xml");
+            game.Save(new InMemoryDataSaverController());
+            game.Save(new RepositoryDataSaverController<InMemoryRepository<BeesGame>, BeesGame>());
+            game.Save(new XmlFileDataSaverController() { Path = directoryPath + "/bees_game{0}.xml" });                        
         }
 
         private void StartGame()
@@ -68,9 +72,9 @@ namespace TrialTask_Bees
             
             game.Restart();
 
-            CreateBeesByTypes<QueenBee>(tbDroneBeeNumber, tbDroneBeeHealth, tbDroneBeeHitPoints);
-            CreateBeesByTypes<DroneBee>(tbWorkerBeeNumber, tbWorkerBeeHealth, tbWorkerBeeHitPoints);
-            CreateBeesByTypes<WorkerBee>(tbQueenBeeNumber, tbQueenBeeHealth, tbQueenBeeHitPoints);
+            CreateBeesByTypes<DroneBee>(tbDroneBeeNumber, tbDroneBeeHealth, tbDroneBeeHitPoints);
+            CreateBeesByTypes<WorkerBee>(tbWorkerBeeNumber, tbWorkerBeeHealth, tbWorkerBeeHitPoints);
+            CreateBeesByTypes<QueenBee>(tbQueenBeeNumber, tbQueenBeeHealth, tbQueenBeeHitPoints);
 
             game.Bees.Reverse();
 
