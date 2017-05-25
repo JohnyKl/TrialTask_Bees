@@ -12,9 +12,15 @@ namespace TrialTask_Bees
         public WorkerBee(int id) : base(id)
         {
             counter++;
-            Type = BeeTypes.Worker;
+            Name = "Worker";
+        }
+
+        public override void Dispose()
+        {
+            counter--;
         }
 
         private static int counter = 0;
+
     }
 }

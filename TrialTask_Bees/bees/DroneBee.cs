@@ -13,9 +13,14 @@ namespace TrialTask_Bees
         public DroneBee(int id) : base(id)
         {
             counter++;
-            Type = BeeTypes.Drone;
-        }             
-           
+            Name = "Drone";
+        }
+
+        public override void Dispose()
+        {
+            counter--;
+        }
+
         private static int counter = 0;
     }
 }

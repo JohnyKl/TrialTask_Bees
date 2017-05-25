@@ -11,11 +11,17 @@ namespace TrialTask_Bees
         public QueenBee() : this(counter) { }
         public QueenBee(int id) : base(id)
         {
-            if (counter > 1) throw new ArgumentOutOfRangeException("Only one Queen Bee is allowed!");
+            //if (counter > 1) throw new ArgumentOutOfRangeException("Only one Queen Bee is allowed!");
             counter++;
-            Type = BeeTypes.Queen;
+            Name = "Queen";
+        }
+
+        public override void Dispose()
+        {
+            counter--;
         }
 
         private static int counter = 0;
+
     }
 }

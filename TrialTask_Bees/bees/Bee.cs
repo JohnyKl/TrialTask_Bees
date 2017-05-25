@@ -12,12 +12,10 @@ namespace TrialTask_Bees
     [XmlInclude(typeof(QueenBee))]
     [XmlInclude(typeof(WorkerBee))]
     [XmlInclude(typeof(DroneBee))]
-    public abstract class Bee : INumerable
+    public abstract class Bee : INumerable, IDisposable
     {
-        public enum BeeTypes
-        {
-            Drone, Worker, Queen
-        }
+        public static readonly int MinimalHealth = 1;
+        public static readonly int MinimalHitPoints = 1;
 
         public Bee() : this(0) { }
 
@@ -28,16 +26,9 @@ namespace TrialTask_Bees
 
         public string Name
         {
-            get
-            {
-                if(string.IsNullOrWhiteSpace(_name))
-                {
-                    _name = string.Format("{0} Bee{1}", Enum.GetName(typeof(BeeTypes), Type), Id); 
-                }
+            get { return _name; }
 
-                return _name;
-            }
-            set { _name = value; }
+            protected set { _name = string.Format("{0} Bee{1}", value, Id); }
         }
         
         public int Health
@@ -49,13 +40,13 @@ namespace TrialTask_Bees
 
             set
             {
-                if (value > 0)
+                if (value > MinimalHealth)
                 {
                     _health = value;
                 }
                 else
                 {
-                    _health = 1;
+                    _health = MinimalHealth;
                 }
             }
         }
@@ -69,28 +60,22 @@ namespace TrialTask_Bees
 
             set
             {
-                if (value > 0)
+                if (value > MinimalHitPoints)
                 {
                     _hitPoints = value;
                 }
                 else
                 {
-                    _hitPoints = 1;
+                    _hitPoints = MinimalHitPoints;
                 }
             }
         }
         
         public bool IsAlive
         {
-            get { return Health > 0; }
+            get { return !(Health < MinimalHealth); }
         }
         
-        public BeeTypes Type
-        {
-            get { return _type; }
-            set { _type = value; }
-        }
-
         public int Id
         {
             get { return _id; }
@@ -107,10 +92,11 @@ namespace TrialTask_Bees
             _health -= _hitPoints;
         }
 
+        public abstract void Dispose();
+
         private string _name;
         private int _health;
         private int _hitPoints;
         private int _id;
-        private BeeTypes _type;
     }
 }

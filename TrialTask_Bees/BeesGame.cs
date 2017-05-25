@@ -30,9 +30,14 @@ namespace TrialTask_Bees
         public void CreateBee<T>(int count, int health, int hitPoints) where T : Bee
         {
             while (count > 0)
-            {
+            {                
                 Bee _newBee = bees.BeesFactory.CreateBee<T>(count, health, hitPoints);
-                                
+                      
+                if(_newBee is QueenBee)
+                {
+                    Queen = (QueenBee)_newBee;
+                }
+                          
                 Bees.Add(_newBee);
                 count--;
             }
@@ -120,14 +125,16 @@ namespace TrialTask_Bees
 
             if (!Bees[randIndex].IsAlive)
             {
-                if (Bees[randIndex].Type == Bee.BeeTypes.Queen)
+                if(Queen == Bees[randIndex])
                 {
-                    TotalKilled += Bees.Count;
-                    Bees.Clear();
+                    //TotalKilled += Bees.Count;
+                    Restart();
                 }
                 else
                 {
                     TotalKilled++;
+
+                    Bees[randIndex].Dispose();
                     Bees.RemoveAt(randIndex);
                 }
             }
@@ -152,6 +159,8 @@ namespace TrialTask_Bees
 
         public void Restart()
         {
+            foreach (Bee bee in Bees)
+                bee.Dispose();
             Bees.Clear();
             TotalKilled = 0;
             HitCount = 0;
@@ -161,30 +170,7 @@ namespace TrialTask_Bees
         {
             controller.Save(this);
         }
-
-        /// <summary>
-        /// Create a copy of the instance in a memory, save it to the file, add it to the in-memory repository.
-        /// </summary>
-        //public void Save(string fileName)
-        //{
-        //    Repo.Add(this);
-
-        //    int counter = 1;
-
-        //    while(File.Exists(string.Format(fileName, counter)))
-        //    {
-        //        counter++;
-        //    }
-
-        //    using (FileStream fSteam = File.Create(string.Format(fileName, counter)))
-        //    {
-        //        XmlSerializer xmlSerializer =
-        //            new XmlSerializer(typeof(BeesGame));
-        //        xmlSerializer.Serialize(fSteam, this);
-        //    }
-
-        //    SavedCopy = Copy();
-        //}
+                
         public BeesGame Copy()
         {
             var formatter = new BinaryFormatter();
@@ -196,12 +182,23 @@ namespace TrialTask_Bees
             }
         }
 
+        private QueenBee Queen
+        {
+            get { return _queen; }
+            set
+            {
+                if (_queen != null) throw new MemberAccessException("Cannot add the new QueenBee to the game. Only one QueenBee is allowed.");
+                _queen = value;
+            }
+        }
+
         private int _id;
         private int _totalKilled;
         private int _hitCount;
 
         private Random _rand = new Random(DateTime.Now.Millisecond);
         private List<Bee> _bees = new List<Bee>();
+        private QueenBee _queen;
         private BeesGame _savedCopy;
         
         private static int _idCounter = 0;
