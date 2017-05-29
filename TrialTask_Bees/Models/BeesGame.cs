@@ -181,7 +181,7 @@ namespace TrialTask_Bees
                 return (BeesGame)formatter.Deserialize(stream);
             }
         }
-
+        
         private QueenBee Queen
         {
             get { return _queen; }

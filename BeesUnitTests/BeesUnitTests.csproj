@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TrialTask_Bees\TrialTask_Bees.csproj">
-      <Project>{8224d6e8-1070-4bcd-9f5c-8d3209fa3b87}</Project>
+      <Project>{79cca8f1-286d-47d5-a6e8-a23776534097}</Project>
       <Name>TrialTask_Bees</Name>
     </ProjectReference>
   </ItemGroup>

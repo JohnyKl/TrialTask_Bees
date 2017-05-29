@@ -13,10 +13,10 @@ namespace TrialTask_Bees
     [XmlInclude(typeof(WorkerBee))]
     [XmlInclude(typeof(DroneBee))]
     public abstract class Bee : INumerable, IDisposable
-    {
+    {        
         public static readonly int MinimalHealth = 1;
         public static readonly int MinimalHitPoints = 1;
-
+                
         public Bee() : this(0) { }
 
         public Bee(int id)

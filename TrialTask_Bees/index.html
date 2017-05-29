@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>BEES GAME</title>
+</head>
+<body>
+    <h1>BEES GAME</h1>
+    <div style="height: 39px">
+        <hr />
+        <div style="border: 1px solid #000000; height: 132px" title="Settings">
+            SETTINGS:<br /><br />
+            <table>
+                <tr>
+                    <td>Types of Bees</td>
+                    <td>Number</td>
+                    <td>Health points</td>
+                    <td>Hit points</td>
+                </tr>
+                <tr>
+                    <td><input id="tbQueenBeeName" type="text" value="Queen Bee" readonly /></td>
+                    <td><input id="tbQueenBeeNumber" type="number" value="1" readonly /></td>
+                    <td><input id="tbQueenBeeHealth" type="number" value="100" /></td>
+                    <td><input id="tbQueenBeeHitPoints" type="number" value="8" /></td>
+                </tr>
+                <tr>
+                    <td><input id="tbWorkerBeeName" type="text" value="Worker Bee" readonly /></td>
+                    <td><input id="tbWorkerBeeNumber" type="number" value="5" /></td>
+                    <td><input id="tbWorkerBeeHealth" type="number" value="75" /></td>
+                    <td><input id="tbWorkerBeeHitPoints" type="number" value="10" /></td>
+                </tr>
+                <tr>
+                    <td><input id="tbDroneBeeName" type="text" value="Drone Bee" readonly /></td>
+                    <td><input id="tbDroneBeeNumber" type="number" value="8" /></td>
+                    <td><input id="tbDroneBeeHealth" type="number" value="50" /></td>
+                    <td><input id="tbDroneBeeHitPoints" type="number" value="12" /></td>
+                    <td><input id="btnStart" type="button" value="Start" onclick="start();" /></td>
+                    <td><input id="btnSave" type="button" value="Save" onclick="save();" /></td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div style="border: 1px solid #000000; height: 400px" title="Settings">
+            <table style="width:100%;">
+                <tr>
+                    <td><textarea id="gameArea" style="width:99%;" rows="20" cols="20"></textarea></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input style="width:300px;" id="lblHitCounter" type="text" value="Current Hits: 0; Total killed: 0" readonly />
+                        <input id="btnHit" type="button" value="Hit" onclick="hit();" />
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var uri = 'api/beesgame';
+        var token = "";
+
+        $(document).ready(function () {
+            if (token == "") {
+                $.getJSON(uri + "/init")
+                  .done(function (data) {
+                      token = data;
+                  });
+            }
+        });
+
+        function save() {
+        }
+
+        function start() {
+            var value = [
+                document.getElementById('tbDroneBeeNumber').value,
+                document.getElementById('tbDroneBeeHealth').value,
+                document.getElementById('tbDroneBeeHitPoints').value,
+                document.getElementById('tbWorkerBeeNumber').value,
+                document.getElementById('tbWorkerBeeHealth').value,
+                document.getElementById('tbWorkerBeeHitPoints').value,
+                document.getElementById('tbQueenBeeNumber').value,
+                document.getElementById('tbQueenBeeHealth').value,
+                document.getElementById('tbQueenBeeHitPoints').value
+            ];
+
+            $.ajax({
+                type: 'POST',
+                traditional: true,
+                dataType: 'application/json',
+                url: uri + "/start",
+                data: { "token": token, "paramsList": value }
+            }).done(refreshAlivedBeesInfo());
+        }
+
+        function hit() {
+            $.ajax({
+                type: 'POST',
+                traditional: true,
+                dataType: 'application/json',
+                url: uri + "/hit",
+                data: { "token": token}
+            }).done(refreshAlivedBeesInfo());            
+        }
+
+        function refreshAlivedBeesInfo() {            
+            $.getJSON(uri + "/GetAlivedBeesString?token=" + token)
+                .done(function (data) {
+                    $('#gameArea').val(data);
+                });
+        }
+
+    </script>
+</body>
+</html>
