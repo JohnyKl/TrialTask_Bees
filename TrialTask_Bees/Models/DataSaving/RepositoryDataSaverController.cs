@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using TrialTask_Bees.Interfaces;
+using TrialTask_Bees.Models.Logging;
 using TrialTask_Bees.Repository;
 
 namespace TrialTask_Bees.DataSaving
@@ -20,7 +21,8 @@ namespace TrialTask_Bees.DataSaving
             }
             else
             {
-                //TODO: add logging
+                Logger.Log.Error(string.Format("RepositoryDataSaverController cannot save an object of class {0} because it don`t implement the INumerable", typeof(T).ToString()));
+
             }
         }
 

@@ -5,12 +5,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
 using TrialTask_Bees.DataSaving;
-using TrialTask_Bees.Interfaces;
+using TrialTask_Bees.Models.Factories;
+using TrialTask_Bees.Models.Interfaces;
 
 namespace TrialTask_Bees
 {
     [Serializable]
-    public class BeesGame : INumerable, IMemorySaveable<BeesGame>
+    public class BeesGame : IGame
     {
         public BeesGame()
         {
@@ -18,30 +19,51 @@ namespace TrialTask_Bees
             Id = _idCounter;
         }
 
-        public int GetTotalKilled()
+        public BeesGame(List<IGameEntityObjectInfo> objectsInfo)
         {
-            return TotalKilled;
+            _idCounter++;
+            Id = _idCounter;
+            GameObjectsParameters = objectsInfo;
         }
-
 
         /// <summary>
         /// Create a new bee of a given type with specified health points and hit points
         /// </summary>
-        public void CreateBee<T>(int count, int health, int hitPoints) where T : Bee
+        public void Create()
         {
-            while (count > 0)
-            {                
-                Bee _newBee = bees.BeesFactory.CreateBee<T>(count, health, hitPoints);
-                      
-                if(_newBee is QueenBee)
+            foreach (IGameEntityObjectInfo gameObj in GameObjectsParameters)
+            {
+                for (int i = 0; i < gameObj.Number; i++)
                 {
-                    Queen = (QueenBee)_newBee;
+                    Bee _newBee = BeesFactory.CreateBee(i + 1, gameObj);
+
+                    if (_newBee is QueenBee)
+                    {
+                        Queen = (QueenBee)_newBee;
+                    }
+
+                    Bees.Add(_newBee);
                 }
-                          
-                Bees.Add(_newBee);
-                count--;
             }
+
+            Bees.Reverse();
         }
+
+        //public void CreateBee<T>(int count, int health, int hitPoints) where T : Bee
+        //{
+        //    while (count > 0)
+        //    {                
+        //        Bee _newBee = BeesFactory.CreateBee<T>(count, health, hitPoints);
+
+        //        if(_newBee is QueenBee)
+        //        {
+        //            Queen = (QueenBee)_newBee;
+        //        }
+
+        //        Bees.Add(_newBee);
+        //        count--;
+        //    }
+        //}
 
         public List<Bee> Bees
         {
@@ -80,7 +102,7 @@ namespace TrialTask_Bees
         }
 
         [XmlIgnore]
-        public BeesGame SavedCopy
+        public IGame SavedCopy
         {
             get
             {
@@ -106,7 +128,7 @@ namespace TrialTask_Bees
                 _id = value;
             }
         }
-        
+
         public bool IsGameOver()
         {
             return Bees.Count == 0;
@@ -115,27 +137,30 @@ namespace TrialTask_Bees
         /// <summary>
         /// Hit a random bee. If the Queen bee was killed, all others bees die too.
         /// </summary>
-        public void HitRandomBee()
+        public void Hit()
         {
-            HitCount++;
-
-            int randIndex = _rand.Next(0, Bees.Count);
-
-            Bees[randIndex].Hit();
-
-            if (!Bees[randIndex].IsAlive)
+            if (Bees.Count > 0)
             {
-                if(Queen == Bees[randIndex])
-                {
-                    //TotalKilled += Bees.Count;
-                    Restart();
-                }
-                else
-                {
-                    TotalKilled++;
+                HitCount++;
 
-                    Bees[randIndex].Dispose();
-                    Bees.RemoveAt(randIndex);
+                int randIndex = _rand.Next(0, Bees.Count);
+
+                Bees[randIndex].Hit();
+
+                if (!Bees[randIndex].IsAlive)
+                {
+                    if (Queen == Bees[randIndex])
+                    {
+                        //TotalKilled += Bees.Count;
+                        Restart();
+                    }
+                    else
+                    {
+                        TotalKilled++;
+
+                        Bees[randIndex].Dispose();
+                        Bees.RemoveAt(randIndex);
+                    }
                 }
             }
         }
@@ -144,7 +169,7 @@ namespace TrialTask_Bees
         /// <summary>
         /// Return a string info about alive bees
         /// </summary>
-        public string AliveBeesToString()
+        public string AlivesToString()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -162,6 +187,7 @@ namespace TrialTask_Bees
             foreach (Bee bee in Bees)
                 bee.Dispose();
             Bees.Clear();
+            _queen = null;
             TotalKilled = 0;
             HitCount = 0;
         }
@@ -170,8 +196,8 @@ namespace TrialTask_Bees
         {
             controller.Save(this);
         }
-                
-        public BeesGame Copy()
+
+        public IGame Copy()
         {
             var formatter = new BinaryFormatter();
             using (var stream = new MemoryStream())
@@ -181,7 +207,7 @@ namespace TrialTask_Bees
                 return (BeesGame)formatter.Deserialize(stream);
             }
         }
-        
+
         private QueenBee Queen
         {
             get { return _queen; }
@@ -192,6 +218,25 @@ namespace TrialTask_Bees
             }
         }
 
+        [XmlAttribute]
+        public List<IGameEntityObjectInfo> GameObjectsParameters
+        {
+            get
+            {
+                if (_gameObjectsParameters == null)
+                {
+                    _gameObjectsParameters = new List<IGameEntityObjectInfo>();
+                }
+                return _gameObjectsParameters;
+            }
+
+            set
+            {
+                if (value != null)
+                    _gameObjectsParameters = value;
+            }
+        }
+
         private int _id;
         private int _totalKilled;
         private int _hitCount;
@@ -199,8 +244,9 @@ namespace TrialTask_Bees
         private Random _rand = new Random(DateTime.Now.Millisecond);
         private List<Bee> _bees = new List<Bee>();
         private QueenBee _queen;
-        private BeesGame _savedCopy;
-        
+        private IGame _savedCopy;
+        private List<IGameEntityObjectInfo> _gameObjectsParameters;
+
         private static int _idCounter = 0;
     }
 }

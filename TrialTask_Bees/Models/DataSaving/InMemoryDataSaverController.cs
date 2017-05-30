@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using TrialTask_Bees.Interfaces;
+using TrialTask_Bees.Models.Logging;
 
 namespace TrialTask_Bees.DataSaving
 {
@@ -18,7 +19,8 @@ namespace TrialTask_Bees.DataSaving
             }
             else
             {
-                //TODO: add logging
+                Logger.Log.Error(string.Format("InMemoryDataSaverController cannot save an object of class {0}"+ 
+                    "because it don`t implement the IMemorySaveable<T>", typeof(T).ToString()));
             }
         }
     }

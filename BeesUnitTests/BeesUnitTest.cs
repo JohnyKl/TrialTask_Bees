@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TrialTask_Bees;
-using TrialTask_Bees.bees;
+using TrialTask_Bees.Models.bees;
 
 namespace BeesUnitTests
 {
@@ -20,53 +20,56 @@ namespace BeesUnitTests
 
             bee = new DroneBee(defaultId)
             {
-                Health = defaultHealth,
-                HitPoints = defaultHitPoints
+                Parameters = new BeeParameter()
+                {
+                    Health = defaultHealth,
+                    HitPoints = defaultHitPoints
+                }               
             };
         }
 
         [TestMethod]
         public void BeeHealthPropertySetZeroOrLessTest()
         {
-            bee.Health = 0;
+            bee.Parameters.Health = 0;
             
-            Assert.AreEqual(Bee.MinimalHealth, bee.Health);
+            Assert.AreEqual(BeeParameter.MinimalHealth, bee.Parameters.Health);
         }
 
         [TestMethod]
         public void BeeHealthPropertySetTest()
         {
-            Assert.AreEqual(defaultHealth, bee.Health);
+            Assert.AreEqual(defaultHealth, bee.Parameters.Health);
         }
 
         [TestMethod]
         public void BeeHitPointsPropertySetZeroOrLessTest()
         {
-            bee.HitPoints = 0;
+            bee.Parameters.HitPoints = 0;
 
-            Assert.AreEqual(Bee.MinimalHitPoints, bee.HitPoints);
+            Assert.AreEqual(BeeParameter.MinimalHitPoints, bee.Parameters.HitPoints);
         }
 
         [TestMethod]
         public void BeeHitPointsPropertySetTest()
         {
-            Assert.AreEqual(defaultHitPoints, bee.HitPoints);
+            Assert.AreEqual(defaultHitPoints, bee.Parameters.HitPoints);
         }
 
         [TestMethod]
         public void BeeHitTest()
         {
-            int healthBeforeHit = bee.Health;
+            int healthBeforeHit = bee.Parameters.Health;
 
             bee.Hit();
 
-            Assert.IsTrue(bee.Health == (healthBeforeHit - defaultHitPoints));
+            Assert.IsTrue(bee.Parameters.Health == (healthBeforeHit - defaultHitPoints));
         }
 
         [TestMethod]
         public void BeeIsAliveTest()
         {
-            int healthBeforeHit = bee.Health;
+            int healthBeforeHit = bee.Parameters.Health;
 
             bee.Hit();
 

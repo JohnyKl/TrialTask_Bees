@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Xml.Serialization;
+using TrialTask_Bees.Models.Logging;
 
 namespace TrialTask_Bees.DataSaving
 {
@@ -56,7 +57,7 @@ namespace TrialTask_Bees.DataSaving
                 }
                 catch(Exception ex)
                 {
-                    //TODO: add logging
+                    Logger.Log.Error(ex.Message, ex);
                 }
             }
         }

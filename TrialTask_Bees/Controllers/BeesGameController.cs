@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using TrialTask_Bees.DataSaving;
+using TrialTask_Bees.Models.bees;
+using TrialTask_Bees.Models.BeesGame;
+using TrialTask_Bees.Models.Factories;
+using TrialTask_Bees.Models.Interfaces;
+using TrialTask_Bees.Models.Logging;
 using TrialTask_Bees.Repository;
 
 namespace TrialTask_Bees.Controllers
@@ -13,14 +16,16 @@ namespace TrialTask_Bees.Controllers
     [RoutePrefix("api/beesgame")]
     public class BeesGameController : ApiController
     {
-        private static Dictionary<string, BeesGame> games = new Dictionary<string, BeesGame>();
-                
+        private static string hitCounterLabelFormat = "Current Hits: {0}; Total killed: {1}";
+        private static Dictionary<string, IGame> games = new Dictionary<string, IGame>();
+
+        [Route("alived/{token}")]
         [HttpGet]
         public IHttpActionResult GetAlivedBeesString(string token)
         {
-            BeesGame game = GetGame(token);
+            IGame game = GetGame(token);
             if (game != null)
-                return Ok(game.AliveBeesToString());
+                return Ok(game.AlivesToString());
             return NotFound();
         }
 
@@ -35,21 +40,27 @@ namespace TrialTask_Bees.Controllers
             token = token.Replace("/", "");
             token = token.Replace("\\", "");
 
+            Logger.Log.Debug(string.Format("Generated token - {0}", token));
+
             return token;
         }
 
-        [Route("hit")]
-        [HttpPost]
-        public void Hit(string token)
+        [Route("hit/{token}")]
+        [HttpGet]
+        public string Hit(string token)
         {
-            BeesGame game = GetGame(token);
-            if(game!= null)
-                game.HitRandomBee();
+            IGame game = GetGame(token);
+            if (game != null)
+            {
+                game.Hit();
+                return string.Format(hitCounterLabelFormat, game.HitCount, game.TotalKilled);
+            }
+            return string.Format(hitCounterLabelFormat, 0, 0);
         }
 
         public bool IsGameOver(string token)
         {
-            BeesGame game = GetGame(token);
+            IGame game = GetGame(token);
             if (game != null)
                 return game.IsGameOver();
             return true;
@@ -59,64 +70,100 @@ namespace TrialTask_Bees.Controllers
         [HttpPost]
         public void Start(HttpRequestMessage paramsList)
         {
-            BeesGame game = new BeesGame();
-            //Console.WriteLine(value);
+            //List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
+            //IGame game = GameFactory.CreateGame<IGame>(objectsInfo);
+
             string res = paramsList.Content.ReadAsStringAsync().Result;
-            int indexOfParams = res.IndexOf("&paramsList");
-            string token = res.Substring(0, res.IndexOf("&paramsList"));
-            token = token.Replace("token=", "");
 
-            res = res.Substring(res.IndexOf("&paramsList"));
+            string token;
+            string[] splittedParams;
 
-            string[] splittedParams = res.Split(new string[] { "&paramsList=" }, StringSplitOptions.RemoveEmptyEntries);
-
-            game.Restart();
-            try
+            if (ParseParams(res, 9, out token, out splittedParams))
             {
-                CreateBeesByTypes<DroneBee>(game, splittedParams[0], splittedParams[1], splittedParams[2]);
-                CreateBeesByTypes<WorkerBee>(game, splittedParams[3], splittedParams[4], splittedParams[5]);
-                CreateBeesByTypes<QueenBee>(game, splittedParams[6], splittedParams[7], splittedParams[8]);
-            }
-            catch(Exception ex)
-            {
-                //TODO: add logging
-            }
+                try
+                {
+                    IGame game = GetGame(token);
 
-            game.Bees.Reverse();
+                    List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
 
-            if(games.ContainsKey(token))
-            {
-                games[token].Restart();
-                games[token] = game;
-            }
-            else
-            {
-                games.Add(token, game);  
-            }             
-        }        
+                    objectsInfo.Add(CreateParameters<DroneBee>(splittedParams[0], splittedParams[1], splittedParams[2]));
+                    objectsInfo.Add(CreateParameters<WorkerBee>(splittedParams[3], splittedParams[4], splittedParams[5]));
+                    objectsInfo.Add(CreateParameters<QueenBee>(splittedParams[6], splittedParams[7], splittedParams[8]));
 
-        private void CreateBeesByTypes<T>(BeesGame game, string tbNumber, string tbHealth, string tbHitPoints) where T : Bee
-        {
-            try
-            {
-                int number = int.Parse(tbNumber);
-                int health = int.Parse(tbHealth);
-                int hitPoints = int.Parse(tbHitPoints);
+                    if (game != null)
+                    {
+                        game.Restart();
+                    }
+                    else
+                    {
+                        game = GameFactory.CreateGame<BeesGame>(objectsInfo);
+                        games.Add(token, game);
+                    }
+                    game.GameObjectsParameters = objectsInfo;
 
-                game.CreateBee<T>(number, health, hitPoints);
-            }
-            catch (Exception ex)
-            {
-                //TODO: Add logging
+                    game.Create();    
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error(ex.Message, ex);
+                }
             }
         }
 
-        private BeesGame GetGame(string token)
+        private bool ParseParams(string str, int expectedParamsCount, out string token, out string[] parameters)
         {
+            token = "";
+            parameters = new string[0];
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str)) throw new ArgumentNullException("The parameters string is an empty");
+
+                int indexOfParams = str.IndexOf("&paramsList");
+                token = str.Substring(0, str.IndexOf("&paramsList"));
+                token = token.Replace("token=", "");
+
+                if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException("The token is an empty");
+
+                str = str.Substring(str.IndexOf("&paramsList"));
+
+                parameters = str.Split(new string[] { "&paramsList=" }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (expectedParamsCount != parameters.Length) throw new ArgumentException("Expected params number for parsing don`t match a current size of an splitted params array.");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex.Message, ex);
+                return false;
+            }
+
+            return true;
+        }
+
+        private IGameEntityObjectInfo CreateParameters<T>(string tbNumber, string tbHealth, string tbHitPoints) where T : Bee
+        {
+            int number = int.Parse(tbNumber);
+            int health = int.Parse(tbHealth);
+            int hitPoints = int.Parse(tbHitPoints);
+
+            BeeGameEntityInfo info = new BeeGameEntityInfo() { Number = number, Type = typeof(T) };
+            info.Parameter = new BeeParameter() { Health = health, HitPoints = hitPoints };
+
+            return info;
+        }
+
+        private IGame GetGame(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                Logger.Log.Error("Is an empty token!");
+            }
+
             if (games.ContainsKey(token))
             {
                 return games[token];
             }
+
+            Logger.Log.Error("There is none games for this token!");
             return null;
         }
 
@@ -124,7 +171,7 @@ namespace TrialTask_Bees.Controllers
         [HttpPost]
         public void Save(string token)
         {
-            BeesGame game = GetGame(token);
+            IGame game = GetGame(token);
             if (game != null)
             {
                 string directoryPath = Environment.CurrentDirectory + "/savedFiles";
@@ -136,10 +183,6 @@ namespace TrialTask_Bees.Controllers
                 game.Save(new InMemoryDataSaverController());
                 game.Save(new RepositoryDataSaverController<InMemoryRepository<BeesGame>, BeesGame>());
                 game.Save(new XmlFileDataSaverController() { Path = directoryPath + "/bees_game{0}.xml" });
-            }
-            else
-            {
-                //todo: add logging
             }
         }
     }

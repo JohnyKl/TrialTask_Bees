@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TrialTask_Bees.Interfaces
 {
-    interface IMemorySaveable<T>
+    public interface IMemorySaveable<T>
     {
         T SavedCopy { get; set; }
         T Copy();

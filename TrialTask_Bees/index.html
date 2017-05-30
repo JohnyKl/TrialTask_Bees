@@ -86,27 +86,41 @@
                 document.getElementById('tbQueenBeeHitPoints').value
             ];
 
-            $.ajax({
-                type: 'POST',
-                traditional: true,
-                dataType: 'application/json',
-                url: uri + "/start",
-                data: { "token": token, "paramsList": value }
-            }).done(refreshAlivedBeesInfo());
+            if (token == "") {
+                $.getJSON(uri + "/init")
+                  .done(function (data) {
+                      token = data;
+                  }).done(start());
+            }
+            else
+            {
+                $.ajax({
+                    type: 'POST',
+                    traditional: true,
+                    dataType: 'application/json',
+                    url: uri + "/start",
+                    data: { "token": token, "paramsList": value }
+                }).done(refreshAlivedBeesInfo());
+            }
         }
 
         function hit() {
-            $.ajax({
-                type: 'POST',
+            $.getJSON(uri + "/hit/" + token)
+                .done(function (data) {
+                    $('#lblHitCounter').val(data);
+                    refreshAlivedBeesInfo();
+                });
+            /*$.ajax({
+                type: 'GET',
                 traditional: true,
                 dataType: 'application/json',
-                url: uri + "/hit",
-                data: { "token": token}
-            }).done(refreshAlivedBeesInfo());            
+                url: uri + "/hit/" + token,
+                success: function (data) { $('#lblHitCounter').val(data); }
+            }).done(refreshAlivedBeesInfo());     */       
         }
 
         function refreshAlivedBeesInfo() {            
-            $.getJSON(uri + "/GetAlivedBeesString?token=" + token)
+            $.getJSON(uri + "/alived/" + token)
                 .done(function (data) {
                     $('#gameArea').val(data);
                 });
