@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TrialTask_Bees;
-using TrialTask_Bees.Models.bees;
-using TrialTask_Bees.Models.Factories;
 
 namespace BeesUnitTests
 {
@@ -20,11 +18,8 @@ namespace BeesUnitTests
 
             bee = new DroneBee(defaultId)
             {
-                Parameters = new BeeParameter()
-                {
-                    Health = defaultHealth,
+                Health = defaultHealth,
                     HitPoints = defaultHitPoints
-                }
             };
         }
 
@@ -74,8 +69,8 @@ namespace BeesUnitTests
 
         //    Assert.IsInstanceOfType(_newBee, typeof(DroneBee));
         //    Assert.AreEqual(defaultId, _newBee.Id);
-        //    Assert.AreEqual(defaultHealth, _newBee.Parameters.Health);
-        //    Assert.AreEqual(defaultHitPoints, _newBee.Parameters.HitPoints);
+        //    Assert.AreEqual(defaultHealth, _newbee.Health);
+        //    Assert.AreEqual(defaultHitPoints, _newbee.HitPoints);
         //}
     }
 }

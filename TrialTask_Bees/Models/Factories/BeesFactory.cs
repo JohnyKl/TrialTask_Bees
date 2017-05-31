@@ -1,7 +1,7 @@
 ﻿using System;
-using TrialTask_Bees.Models.Interfaces;
+using TrialTask_Bees.Interfaces;
 
-namespace TrialTask_Bees.Models.Factories
+namespace TrialTask_Bees.Factories
 {
     public class BeesFactory
     {
@@ -23,8 +23,9 @@ namespace TrialTask_Bees.Models.Factories
         {
             Bee newBee = (Bee)Activator.CreateInstance(objectInfo.Type, new object[] { beeId });
 
-            newBee.Parameters = objectInfo.Parameter.Copy();
-
+            newBee.Health = objectInfo.Health;
+            newBee.HitPoints = objectInfo.HitPoint;
+            
             return newBee;
         }
     }

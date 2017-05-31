@@ -4,9 +4,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
-using TrialTask_Bees.DataSaving;
-using TrialTask_Bees.Models.Factories;
-using TrialTask_Bees.Models.Interfaces;
+using TrialTask_Bees.Factories;
+using TrialTask_Bees.Interfaces;
 
 namespace TrialTask_Bees
 {
@@ -65,7 +64,18 @@ namespace TrialTask_Bees
         //    }
         //}
 
-        public List<Bee> Bees
+        public Bee GetBeeByIndex(int index)
+        {
+            if (index >= 0 && index < Bees.Count)
+            {
+                return Bees[index];
+            }
+
+            return null;
+        }
+        public int AlivedBeesCount() { return Bees.Count; }
+
+        private List<Bee> Bees
         {
             get
             {
@@ -237,9 +247,23 @@ namespace TrialTask_Bees
             }
         }
 
+        public string Key
+        {
+            get
+            {
+                return _key;
+            }
+
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value)) _key = value;
+            }
+        }
+
         private int _id;
         private int _totalKilled;
         private int _hitCount;
+        private string _key;
 
         private Random _rand = new Random(DateTime.Now.Millisecond);
         private List<Bee> _bees = new List<Bee>();

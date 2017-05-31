@@ -1,6 +1,6 @@
 ﻿using TrialTask_Bees.Interfaces;
 
-namespace TrialTask_Bees.Repository
+namespace TrialTask_Bees.Interfaces
 {
     public interface IRepository<T> where T : INumerable
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using TrialTask_Bees.Interfaces;
-using TrialTask_Bees.Models.Logging;
+using TrialTask_Bees.Logging;
 
 namespace TrialTask_Bees.DataSaving
 {

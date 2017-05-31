@@ -1,11 +1,7 @@
 ﻿using log4net;
 using log4net.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace TrialTask_Bees.Models.Logging
+namespace TrialTask_Bees.Logging
 {
     public static class Logger
     {

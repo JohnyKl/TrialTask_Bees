@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using TrialTask_Bees.Models.Interfaces;
+using TrialTask_Bees.Interfaces;
 
-namespace TrialTask_Bees.Models.BeesGame
+namespace TrialTask_Bees
 {
     [Serializable]
     public class BeeGameEntityInfo : IGameEntityObjectInfo
     {
         private int _number;
-        private IGameEntityParameter _parameter;
+        private int _health;
+        private int _hitPoint;
         private Type _type;
         
         public int Number
@@ -27,22 +25,6 @@ namespace TrialTask_Bees.Models.BeesGame
             }
         }
 
-        public IGameEntityParameter Parameter
-        {
-            get
-            {
-                if (_parameter == null)
-                {
-                    throw new ArgumentException("Parameter not initialized");
-                }
-                return _parameter;
-            }
-
-            set
-            {
-                _parameter = value;
-            }
-        }
 
         public Type Type
         {
@@ -61,6 +43,32 @@ namespace TrialTask_Bees.Models.BeesGame
                 {
                     throw new ArgumentException("Given type is not a subclass of a Bee class");
                 }
+            }
+        }
+
+        public int Health
+        {
+            get
+            {
+                return _health;
+            }
+
+            set
+            {
+                _health = value;
+            }
+        }
+
+        public int HitPoint
+        {
+            get
+            {
+                return _hitPoint;
+            }
+
+            set
+            {
+                _hitPoint = value;
             }
         }
     }

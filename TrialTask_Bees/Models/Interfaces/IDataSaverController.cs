@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrialTask_Bees.DataSaving
+namespace TrialTask_Bees.Interfaces
 {
     public interface IDataSaverController
     {

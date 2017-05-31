@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TrialTask_Bees;
-using TrialTask_Bees.Models.bees;
 
 namespace BeesUnitTests
 {
@@ -19,11 +18,8 @@ namespace BeesUnitTests
 
             bee = new WorkerBee(defaultId)
             {
-                Parameters = new BeeParameter()
-                {
-                    Health = defaultHealth,
-                    HitPoints = defaultHitPoints
-                }
+                Health = defaultHealth,
+                HitPoints = defaultHitPoints
             };
         }
 

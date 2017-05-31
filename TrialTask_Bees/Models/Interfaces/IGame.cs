@@ -1,12 +1,8 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TrialTask_Bees.DataSaving;
 using TrialTask_Bees.Interfaces;
 
-namespace TrialTask_Bees.Models.Interfaces
+namespace TrialTask_Bees.Interfaces
 {
     public interface IGame : INumerable, IMemorySaveable<IGame>
     {

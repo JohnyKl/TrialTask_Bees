@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using TrialTask_Bees.Models.Interfaces;
+using TrialTask_Bees.Interfaces;
 
-namespace TrialTask_Bees.Models.Factories
+namespace TrialTask_Bees.Factories
 {
     public static class GameFactory
     {

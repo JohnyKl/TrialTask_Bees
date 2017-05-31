@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Xml.Serialization;
 using TrialTask_Bees.Interfaces;
-using TrialTask_Bees.Models.bees;
-using TrialTask_Bees.Models.Interfaces;
 
 namespace TrialTask_Bees
 {
@@ -12,6 +10,9 @@ namespace TrialTask_Bees
     [XmlInclude(typeof(DroneBee))]
     public abstract class Bee : INumerable, IDisposable
     {
+        public static readonly int MinimalHealth = 1;
+        public static readonly int MinimalHitPoints = 1;
+
         public Bee() : this(0) { }
 
         public Bee(int id)
@@ -28,7 +29,7 @@ namespace TrialTask_Bees
         
         public bool IsAlive
         {
-            get { return !(Parameters.Health < BeeParameter.MinimalHealth); }
+            get { return !(Health < MinimalHealth); }
         }
         
         public int Id
@@ -37,32 +38,60 @@ namespace TrialTask_Bees
             set { _id = value; }
         }
 
-        public IGameEntityParameter Parameters
+        public int Health
         {
             get
             {
-                return _parameters;
+                return _health;
             }
 
             set
             {
-                _parameters = value;
+                if (value > MinimalHealth)
+                {
+                    _health = value;
+                }
+                else
+                {
+                    _health = MinimalHealth;
+                }
+            }
+        }
+
+        public int HitPoints
+        {
+            get
+            {
+                return _hitPoints;
+            }
+
+            set
+            {
+                if (value > MinimalHitPoints)
+                {
+                    _hitPoints = value;
+                }
+                else
+                {
+                    _hitPoints = MinimalHitPoints;
+                }
             }
         }
 
         public override string ToString()
         {
-            return string.Format("{0} {1}", Name, Parameters.Health);
+            return string.Format("{0} {1}", Name, Health);
         }
         
         public void Hit()
         {
-            Parameters.IncreaseHealth();
+            _health -= _hitPoints;
         }
 
         public abstract void Dispose();
 
-        private IGameEntityParameter _parameters;
+        private int _health;
+        private int _hitPoints;
         private string _name;
         private int _id;
     }

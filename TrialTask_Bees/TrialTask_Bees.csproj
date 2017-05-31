@@ -80,6 +80,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
       <Private>True</Private>
@@ -131,26 +135,27 @@
     </Compile>
     <Compile Include="Models\BeesGame\BeesGame.cs" />
     <Compile Include="Models\BeesGame\BeeGameEntityInfo.cs" />
-    <Compile Include="Models\bees\Bee.cs" />
-    <Compile Include="Models\bees\BeeParameter.cs" />
+    <Compile Include="Models\BeesGame\BeesGameService.cs" />
+    <Compile Include="Models\BeesGame\bees\Bee.cs" />
     <Compile Include="Models\Factories\BeesFactory.cs" />
-    <Compile Include="Models\bees\DroneBee.cs" />
-    <Compile Include="Models\bees\QueenBee.cs" />
-    <Compile Include="Models\bees\WorkerBee.cs" />
-    <Compile Include="Models\DataSaving\IDataSaverController.cs" />
-    <Compile Include="Models\DataSaving\InMemoryDataSaverController.cs" />
-    <Compile Include="Models\DataSaving\MySqlDataSaverController.cs" />
-    <Compile Include="Models\DataSaving\RepositoryDataSaverController.cs" />
-    <Compile Include="Models\DataSaving\XmlFileDataSaverController.cs" />
+    <Compile Include="Models\BeesGame\bees\DroneBee.cs" />
+    <Compile Include="Models\BeesGame\bees\QueenBee.cs" />
+    <Compile Include="Models\BeesGame\bees\WorkerBee.cs" />
+    <Compile Include="Models\Interfaces\IDataSaverController.cs" />
+    <Compile Include="Models\DataLayer\DataSaving\InMemoryDataSaverController.cs" />
+    <Compile Include="Models\DataLayer\DataSaving\MySqlDataSaverController.cs" />
+    <Compile Include="Models\DataLayer\DataSaving\RepositoryDataSaverController.cs" />
+    <Compile Include="Models\DataLayer\DataSaving\XmlFileDataSaverController.cs" />
     <Compile Include="Models\Factories\GameFactory.cs" />
     <Compile Include="Models\Interfaces\IGame.cs" />
     <Compile Include="Models\Interfaces\IGameEntityObjectInfo.cs" />
-    <Compile Include="Models\Interfaces\IGameEntityParameter.cs" />
+    <Compile Include="Models\Interfaces\IGameService.cs" />
     <Compile Include="Models\Interfaces\IMemorySaveable.cs" />
     <Compile Include="Models\Interfaces\INumerable.cs" />
     <Compile Include="Models\Logging\Logger.cs" />
-    <Compile Include="Models\Repository\InMemoryRepository.cs" />
-    <Compile Include="Models\Repository\IRepository.cs" />
+    <Compile Include="Models\DataLayer\Repository\InMemoryRepository.cs" />
+    <Compile Include="Models\Interfaces\IRepository.cs" />
+    <Compile Include="Models\Ninject\ManagerBindingModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -71,6 +71,14 @@
         });
 
         function save() {
+            if (token == "") {
+                $.getJSON(uri + "/init")
+                  .done(function (data) {
+                      token = data;
+                  });
+            }
+
+            $.getJSON(uri + "/save/" + token);
         }
 
         function start() {
@@ -90,7 +98,7 @@
                 $.getJSON(uri + "/init")
                   .done(function (data) {
                       token = data;
-                  }).done(start());
+                  });
             }
             else
             {

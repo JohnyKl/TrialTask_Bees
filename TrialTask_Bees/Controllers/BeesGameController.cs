@@ -1,29 +1,27 @@
-﻿using System;
+﻿using Ninject;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Web.Http;
-using TrialTask_Bees.DataSaving;
-using TrialTask_Bees.Models.bees;
-using TrialTask_Bees.Models.BeesGame;
-using TrialTask_Bees.Models.Factories;
-using TrialTask_Bees.Models.Interfaces;
-using TrialTask_Bees.Models.Logging;
-using TrialTask_Bees.Repository;
+using TrialTask_Bees.Interfaces;
+using TrialTask_Bees.Logging;
+using TrialTask_Bees.Models.Ninject;
 
 namespace TrialTask_Bees.Controllers
 {
     [RoutePrefix("api/beesgame")]
     public class BeesGameController : ApiController
     {
+        public static IKernel ninjectKernel = new StandardKernel(new ManagerBindingModule());
+        public static IGameService gameService = ninjectKernel.Get<IGameService>();
+
         private static string hitCounterLabelFormat = "Current Hits: {0}; Total killed: {1}";
-        private static Dictionary<string, IGame> games = new Dictionary<string, IGame>();
 
         [Route("alived/{token}")]
         [HttpGet]
         public IHttpActionResult GetAlivedBeesString(string token)
         {
-            IGame game = GetGame(token);
+            IGame game = gameService.Get(token);
             if (game != null)
                 return Ok(game.AlivesToString());
             return NotFound();
@@ -49,7 +47,7 @@ namespace TrialTask_Bees.Controllers
         [HttpGet]
         public string Hit(string token)
         {
-            IGame game = GetGame(token);
+            IGame game = gameService.Get(token);
             if (game != null)
             {
                 game.Hit();
@@ -60,7 +58,7 @@ namespace TrialTask_Bees.Controllers
 
         public bool IsGameOver(string token)
         {
-            IGame game = GetGame(token);
+            IGame game = gameService.Get(token);
             if (game != null)
                 return game.IsGameOver();
             return true;
@@ -82,7 +80,7 @@ namespace TrialTask_Bees.Controllers
             {
                 try
                 {
-                    IGame game = GetGame(token);
+                    IGame game = gameService.Get(token);
 
                     List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
 
@@ -96,12 +94,15 @@ namespace TrialTask_Bees.Controllers
                     }
                     else
                     {
-                        game = GameFactory.CreateGame<BeesGame>(objectsInfo);
-                        games.Add(token, game);
+                        game = ninjectKernel.Get<IGame>();
+                        game.GameObjectsParameters = objectsInfo;
+                            //GameFactory.CreateGame<BeesGame>(objectsInfo);
+                        gameService.Add(token, game);
                     }
                     game.GameObjectsParameters = objectsInfo;
 
-                    game.Create();    
+                    game.Create();
+                    Save(token);
                 }
                 catch (Exception ex)
                 {
@@ -145,45 +146,17 @@ namespace TrialTask_Bees.Controllers
             int health = int.Parse(tbHealth);
             int hitPoints = int.Parse(tbHitPoints);
 
-            BeeGameEntityInfo info = new BeeGameEntityInfo() { Number = number, Type = typeof(T) };
-            info.Parameter = new BeeParameter() { Health = health, HitPoints = hitPoints };
+            BeeGameEntityInfo info = new BeeGameEntityInfo() { Number = number, Type = typeof(T), Health = health, HitPoint = hitPoints };
 
             return info;
         }
 
-        private IGame GetGame(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                Logger.Log.Error("Is an empty token!");
-            }
-
-            if (games.ContainsKey(token))
-            {
-                return games[token];
-            }
-
-            Logger.Log.Error("There is none games for this token!");
-            return null;
-        }
-
-        [Route("save")]
-        [HttpPost]
+        [Route("save/{token}")]
+        [HttpGet]
         public void Save(string token)
         {
-            IGame game = GetGame(token);
-            if (game != null)
-            {
-                string directoryPath = Environment.CurrentDirectory + "/savedFiles";
-                if (!Directory.Exists(directoryPath))
-                {
-                    Directory.CreateDirectory(directoryPath);
-                }
-
-                game.Save(new InMemoryDataSaverController());
-                game.Save(new RepositoryDataSaverController<InMemoryRepository<BeesGame>, BeesGame>());
-                game.Save(new XmlFileDataSaverController() { Path = directoryPath + "/bees_game{0}.xml" });
-            }
+            if (!string.IsNullOrWhiteSpace(token))
+                gameService.Save(token, ninjectKernel.Get<IDataSaverController>());
         }
     }
 }
