@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeesUnitTests", "BeesUnitTests\BeesUnitTests.csproj", "{C5D4D56B-53F6-4E27-B83D-F60858AB1233}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrialTask_Bees.Test", "BeesUnitTests\TrialTask_Bees.Test.csproj", "{C5D4D56B-53F6-4E27-B83D-F60858AB1233}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrialTask_Bees", "TrialTask_Bees\TrialTask_Bees.csproj", "{79CCA8F1-286D-47D5-A6E8-A23776534097}"
 EndProject

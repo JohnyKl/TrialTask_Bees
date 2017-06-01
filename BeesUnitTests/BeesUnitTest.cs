@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TrialTask_Bees;
+﻿using TrialTask_Bees;
+using NUnit.Framework;
 
 namespace BeesUnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class BeesUnitTest
     {
         static Bee bee = null;
@@ -12,7 +11,7 @@ namespace BeesUnitTests
         int defaultHealth = 20;
         int defaultHitPoints = 10;
 
-        [TestInitialize]
+        [SetUp]
         public void PrepareBee()
         {
             if (bee != null) bee.Dispose();
@@ -24,7 +23,7 @@ namespace BeesUnitTests
             };
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeHealthPropertySetZeroOrLessTest()
         {
             bee.Health = 0;
@@ -32,13 +31,13 @@ namespace BeesUnitTests
             Assert.AreEqual(Bee.MinimalHealth, bee.Health);
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeHealthPropertySetTest()
         {
             Assert.AreEqual(defaultHealth, bee.Health);
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeHitPointsPropertySetZeroOrLessTest()
         {
             bee.HitPoints = 0;
@@ -46,13 +45,13 @@ namespace BeesUnitTests
             Assert.AreEqual(Bee.MinimalHitPoints, bee.HitPoints);
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeHitPointsPropertySetTest()
         {
             Assert.AreEqual(defaultHitPoints, bee.HitPoints);
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeHitTest()
         {
             int healthBeforeHit = bee.Health;
@@ -62,7 +61,7 @@ namespace BeesUnitTests
             Assert.IsTrue(bee.Health == (healthBeforeHit - defaultHitPoints));
         }
 
-        [TestMethod]
+        [TestCase]
         public void BeeIsAliveTest()
         {
             int healthBeforeHit = bee.Health;

@@ -1,17 +1,26 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using TrialTask_Bees;
+using TrialTask_Bees.Factories;
+using TrialTask_Bees.Interfaces;
 
 namespace BeesUnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class WorkerBeeUnitTest
     {
         static WorkerBee bee = null;
-        int defaultId = 5;
-        int defaultHealth = 20;
-        int defaultHitPoints = 10;
+        static int defaultId = 5;
+        static int defaultHealth = 20;
+        static int defaultHitPoints = 10;
+        static IGameEntityObjectInfo info = new BeeGameEntityInfo()
+        {
+            Number = 1,
+            Type = typeof(WorkerBee),
+            Health = defaultHealth,
+            HitPoint = defaultHitPoints
+        };
 
-        [TestInitialize]
+        [SetUp]
         public void PrepareWorkerBee()
         {
             if (bee != null) bee.Dispose();
@@ -23,7 +32,7 @@ namespace BeesUnitTests
             };
         }
 
-        [TestMethod]
+        [TestCase]
         public void WorkerBeeDefaultConstructorTest()
         {
             Bee bee = new WorkerBee();
@@ -34,43 +43,32 @@ namespace BeesUnitTests
             Assert.IsTrue(bee2.Id == (bee.Id + 1));
         }
 
-        [TestMethod]
+        [TestCase]
         public void WorkerBeeParametersConstructorTest()
         {
             Assert.IsNotNull(bee);
             Assert.IsTrue(bee.Id == defaultId);
         }
 
-        [TestMethod]
+        [TestCase]
         public void WorkerBeeNamePropertyTest()
         {
             Assert.AreEqual(string.Format("Worker Bee{0}", defaultId), bee.Name);
         }
 
-        [TestMethod]
+        [TestCase]
         public void WorkerBeeToStringTest()
         {
             Assert.AreEqual(string.Format("Worker Bee{0} {1}", defaultId, defaultHealth), bee.ToString());
         }
 
-        //[TestMethod]
-        //public void BeesFactoryWorkerIdParameterTest()
-        //{
-        //    Bee _newBee = BeesFactory.CreateBee<WorkerBee>(defaultId);
+        [TestCase]
+        public void BeesFactoryWorkerIdParameterTest()
+        {
+            Bee _newBee = BeesFactory.CreateBee(defaultId, info);
 
-        //    Assert.IsInstanceOfType(_newBee, typeof(WorkerBee));
-        //    Assert.AreEqual(defaultId, _newBee.Id);
-        //}
-
-        //[TestMethod]
-        //public void BeesFactoryWorkerAllParameterTest()
-        //{
-        //    Bee _newBee = BeesFactory.CreateBee<WorkerBee>(defaultId, defaultHealth, defaultHitPoints);
-
-        //    Assert.IsInstanceOfType(_newBee, typeof(WorkerBee));
-        //    Assert.AreEqual(defaultId, _newBee.Id);
-        //    Assert.AreEqual(defaultHealth, _newBee.Health);
-        //    Assert.AreEqual(defaultHitPoints, _newBee.HitPoints);
-        //}
+            Assert.IsInstanceOf<WorkerBee>(_newBee); 
+            Assert.AreEqual(defaultId, _newBee.Id);
+        }
     }
 }

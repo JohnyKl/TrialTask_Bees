@@ -1,21 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using TrialTask_Bees;
+using TrialTask_Bees.Factories;
+using TrialTask_Bees.Interfaces;
 
 namespace BeesUnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class DroneBeeUnitTest
     {
         static DroneBee bee = null;
-        int defaultId = 5;
-        int defaultHealth = 20;
-        int defaultHitPoints = 10;
+        static int defaultId = 5;
+        static int defaultHealth = 20;
+        static int defaultHitPoints = 10;
+        static IGameEntityObjectInfo info = new BeeGameEntityInfo() { Number = 1,        
+                  Type = typeof(DroneBee),
+                  Health = defaultHealth,
+                  HitPoint = defaultHitPoints
+            };
 
-        [TestInitialize]
+        [SetUp]
         public void PrepareDroneBee()
         {
             if (bee != null) bee.Dispose();
-
+            
             bee = new DroneBee(defaultId)
             {
                 Health = defaultHealth,
@@ -23,7 +30,7 @@ namespace BeesUnitTests
             };
         }
 
-        [TestMethod]
+        [TestCase]
         public void DroneBeeDefaultConstructorTest()
         {
             Bee bee = new DroneBee();
@@ -34,43 +41,32 @@ namespace BeesUnitTests
             Assert.IsTrue(bee2.Id == (bee.Id + 1));
         }
 
-        [TestMethod]
+        [TestCase]
         public void DroneBeeParametersConstructorTest()
         {
             Assert.IsNotNull(bee);
             Assert.IsTrue(bee.Id == defaultId);
         }
 
-        [TestMethod]
+        [TestCase]
         public void DroneBeeNamePropertyTest()
         {
             Assert.AreEqual(string.Format("Drone Bee{0}", defaultId), bee.Name);
         }
 
-        [TestMethod]
+        [TestCase]
         public void DroneBeeToStringTest()
         {
             Assert.AreEqual(string.Format("Drone Bee{0} {1}", defaultId, defaultHealth), bee.ToString());
         }
 
-        //[TestMethod]
-        //public void BeesFactoryDroneIdParameterTest()
-        //{
-        //    Bee _newBee = BeesFactory.CreateBee<DroneBee>(defaultId);
+        [TestCase]
+        public void BeesFactoryDroneIdParameterTest()
+        {
+            Bee _newBee = BeesFactory.CreateBee(defaultId, info);
 
-        //    Assert.IsInstanceOfType(_newBee, typeof(DroneBee));
-        //    Assert.AreEqual(defaultId, _newBee.Id);
-        //}
-
-        //[TestMethod]
-        //public void BeesFactoryDroneAllParameterTest()
-        //{
-        //    Bee _newBee = BeesFactory.CreateBee<DroneBee>(defaultId, defaultHealth, defaultHitPoints);
-
-        //    Assert.IsInstanceOfType(_newBee, typeof(DroneBee));
-        //    Assert.AreEqual(defaultId, _newBee.Id);
-        //    Assert.AreEqual(defaultHealth, _newbee.Health);
-        //    Assert.AreEqual(defaultHitPoints, _newbee.HitPoints);
-        //}
+            Assert.IsInstanceOf<DroneBee>(_newBee);
+            Assert.AreEqual(defaultId, _newBee.Id);
+        }        
     }
 }

@@ -96,7 +96,7 @@ namespace TrialTask_Bees.Controllers
                     {
                         game = ninjectKernel.Get<IGame>();
                         game.GameObjectsParameters = objectsInfo;
-                            //GameFactory.CreateGame<BeesGame>(objectsInfo);
+                        //GameFactory.CreateGame<BeesGame>(objectsInfo);
                         gameService.Add(token, game);
                     }
                     game.GameObjectsParameters = objectsInfo;
@@ -146,7 +146,11 @@ namespace TrialTask_Bees.Controllers
             int health = int.Parse(tbHealth);
             int hitPoints = int.Parse(tbHitPoints);
 
-            BeeGameEntityInfo info = new BeeGameEntityInfo() { Number = number, Type = typeof(T), Health = health, HitPoint = hitPoints };
+            IGameEntityObjectInfo info = ninjectKernel.Get<IGameEntityObjectInfo>();
+            info.Number = number;
+            info.Type = typeof(T);
+            info.Health = health;
+            info.HitPoint = hitPoints;
 
             return info;
         }

@@ -10,6 +10,7 @@ namespace TrialTask_Bees.Models.Ninject
         {
             Bind<IGame>().To<BeesGame>();
             Bind<IGameService>().To<BeesGameService>();
+            Bind<IGameEntityObjectInfo>().To<BeeGameEntityInfo>();
             //Bind<IDataSaverController>().To<XmlFileDataSaverController>();
             Bind<IDataSaverController>().To<MySqlBeesGameDataSaverController>();
         }
