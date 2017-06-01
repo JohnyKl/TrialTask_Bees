@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Xml.Serialization;
 using TrialTask_Bees.Interfaces;
@@ -8,9 +9,9 @@ namespace TrialTask_Bees.DataSaving
 {
     public class XmlFileDataSaverController : IDataSaverController
     {
-        private static readonly string DEFAULT_PATH = "saved{0}.xml";
-        private static readonly string EXTENSION = ".xml";
-        private static readonly string FORMAT_BRACKETS = "{0}";
+        private static readonly string DEFAULT_PATH = ConfigurationManager.AppSettings["defaultSaveXMLFilePath"];
+        private static readonly string EXTENSION = ConfigurationManager.AppSettings["defaultSaveXMLFileExtension"];
+        private static readonly string FORMAT_BRACKETS = ConfigurationManager.AppSettings["defaultSaveXMLFileFormatBracets"];
 
         public string Path
         {
