@@ -15,7 +15,7 @@ namespace TrialTask_Bees.Controllers
         public static IKernel ninjectKernel = new StandardKernel(new ManagerBindingModule());
         public static IGameService gameService = ninjectKernel.Get<IGameService>();
 
-        private static string hitCounterLabelFormat = "Current Hits: {0}; Total killed: {1}";
+        public static string hitCounterLabelFormat = "Current Hits: {0}; Total killed: {1}";
 
         [Route("alived/{token}")]
         [HttpGet]
@@ -71,47 +71,56 @@ namespace TrialTask_Bees.Controllers
             //List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
             //IGame game = GameFactory.CreateGame<IGame>(objectsInfo);
 
-            string res = paramsList.Content.ReadAsStringAsync().Result;
-
-            string token;
-            string[] splittedParams;
-
-            if (ParseParams(res, 9, out token, out splittedParams))
+            try
             {
-                try
+                string res = paramsList.Content.ReadAsStringAsync().Result;
+
+                string token;
+                string[] splittedParams;
+
+                if (ParseParams(res, 9, out token, out splittedParams))
                 {
-                    IGame game = gameService.Get(token);
-
-                    List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
-
-                    objectsInfo.Add(CreateParameters<DroneBee>(splittedParams[0], splittedParams[1], splittedParams[2]));
-                    objectsInfo.Add(CreateParameters<WorkerBee>(splittedParams[3], splittedParams[4], splittedParams[5]));
-                    objectsInfo.Add(CreateParameters<QueenBee>(splittedParams[6], splittedParams[7], splittedParams[8]));
-
-                    if (game != null)
+                    try
                     {
-                        game.Restart();
-                    }
-                    else
-                    {
-                        game = ninjectKernel.Get<IGame>();
+                        IGame game = gameService.Get(token);
+
+                        List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
+
+                        objectsInfo.Add(CreateParameters<DroneBee>(splittedParams[0], splittedParams[1], splittedParams[2]));
+                        objectsInfo.Add(CreateParameters<WorkerBee>(splittedParams[3], splittedParams[4], splittedParams[5]));
+                        objectsInfo.Add(CreateParameters<QueenBee>(splittedParams[6], splittedParams[7], splittedParams[8]));
+
+                        if (game != null)
+                        {
+                            game.Restart();
+                        }
+                        else {
+                            game = ninjectKernel.Get<IGame>();
+                            game.GameObjectsParameters = objectsInfo;
+                            //GameFactory.CreateGame<BeesGame>(objectsInfo);
+                            gameService.Add(token, game);
+                        }
                         game.GameObjectsParameters = objectsInfo;
-                        //GameFactory.CreateGame<BeesGame>(objectsInfo);
-                        gameService.Add(token, game);
-                    }
-                    game.GameObjectsParameters = objectsInfo;
 
-                    game.Create();
-                    Save(token);
+                        game.Create();
+                        Save(token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log.Error(ex.Message, ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Logger.Log.Error(ex.Message, ex);
+                else {
+                    Logger.Log.Info("ParseParams returned false. Incoming message: " + res);
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex.Message, ex);
             }
         }
 
-        private bool ParseParams(string str, int expectedParamsCount, out string token, out string[] parameters)
+        public bool ParseParams(string str, int expectedParamsCount, out string token, out string[] parameters)
         {
             token = "";
             parameters = new string[0];
@@ -120,7 +129,10 @@ namespace TrialTask_Bees.Controllers
                 if (string.IsNullOrWhiteSpace(str)) throw new ArgumentNullException("The parameters string is an empty");
 
                 int indexOfParams = str.IndexOf("&paramsList");
-                token = str.Substring(0, str.IndexOf("&paramsList"));
+
+                if (indexOfParams == -1) throw new ArgumentException("There is an empty parameters.");
+
+                token = str.Substring(0, indexOfParams);
                 token = token.Replace("token=", "");
 
                 if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException("The token is an empty");
@@ -130,6 +142,7 @@ namespace TrialTask_Bees.Controllers
                 parameters = str.Split(new string[] { "&paramsList=" }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (expectedParamsCount != parameters.Length) throw new ArgumentException("Expected params number for parsing don`t match a current size of an splitted params array.");
+
             }
             catch (Exception ex)
             {
@@ -157,10 +170,14 @@ namespace TrialTask_Bees.Controllers
 
         [Route("save/{token}")]
         [HttpGet]
-        public void Save(string token)
+        public IHttpActionResult Save(string token)
         {
             if (!string.IsNullOrWhiteSpace(token))
-                gameService.Save(token, ninjectKernel.Get<IDataSaverController>());
+            {
+                if (gameService.Save(token, ninjectKernel.Get<IDataSaverController>()))
+                    return Ok();
+            }
+            return NotFound();
         }
     }
 }

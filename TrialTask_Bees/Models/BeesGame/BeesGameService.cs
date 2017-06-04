@@ -40,7 +40,7 @@ namespace TrialTask_Bees
                 Logger.Log.Error("Cannot add to the dictionary a key-pair with a null key.");
             }
         }
-
+        
         public IGame Get(string key)
         {
             IGame result = null;
@@ -86,13 +86,18 @@ namespace TrialTask_Bees
             }
         }
 
-        public void Save(string key, IDataSaverController controller)
+        public bool Save(string key, IDataSaverController controller)
         {
             IGame game = Get(key);
             if (game != null)
-            {                
-                game.Save(controller);
+            {
+                try {
+                    game.Save(controller);
+                    return true;
+                }
+                catch(Exception ex) { Logger.Log.Error(ex.Message, ex); }
             }
+            return false;
         }
     }
 }

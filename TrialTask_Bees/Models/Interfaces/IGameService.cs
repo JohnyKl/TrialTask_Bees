@@ -13,6 +13,6 @@ namespace TrialTask_Bees.Interfaces
         IGame Get(string key);
         void Remove(string key);
         void Remove(IGame game);
-        void Save(string key, IDataSaverController controller);
+        bool Save(string key, IDataSaverController controller);
     }
 }
