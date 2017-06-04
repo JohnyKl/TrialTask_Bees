@@ -86,9 +86,9 @@ namespace TrialTask_Bees.Controllers
 
                         List<IGameEntityObjectInfo> objectsInfo = new List<IGameEntityObjectInfo>();
 
-                        objectsInfo.Add(CreateParameters<DroneBee>(splittedParams[0], splittedParams[1], splittedParams[2]));
-                        objectsInfo.Add(CreateParameters<WorkerBee>(splittedParams[3], splittedParams[4], splittedParams[5]));
                         objectsInfo.Add(CreateParameters<QueenBee>(splittedParams[6], splittedParams[7], splittedParams[8]));
+                        objectsInfo.Add(CreateParameters<WorkerBee>(splittedParams[3], splittedParams[4], splittedParams[5]));
+                        objectsInfo.Add(CreateParameters<DroneBee>(splittedParams[0], splittedParams[1], splittedParams[2]));
 
                         if (game != null)
                         {
@@ -103,7 +103,8 @@ namespace TrialTask_Bees.Controllers
                         game.GameObjectsParameters = objectsInfo;
 
                         game.Create();
-                        Save(token);
+
+                        Save(token);                     
                     }
                     catch (Exception ex)
                     {

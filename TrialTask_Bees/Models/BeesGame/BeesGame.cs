@@ -44,8 +44,6 @@ namespace TrialTask_Bees
                     Bees.Add(_newBee);
                 }
             }
-
-            Bees.Reverse();
         }
 
         //public void CreateBee<T>(int count, int health, int hitPoints) where T : Bee

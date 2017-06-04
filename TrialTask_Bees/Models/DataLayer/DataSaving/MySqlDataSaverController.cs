@@ -8,11 +8,6 @@ namespace TrialTask_Bees.DataSaving
 {
     public class MySqlBeesGameDataSaverController : IDataSaverController
     {
-    //    public static readonly string INSERT_BEES_GAME_TABLE_FORMAT = "INSERT INTO `bees_game`(`id`, `HitCounter`, `TotalKilled`, `NumberOfAlivedBees`) VALUES " +
-    //                    "({0},{1},{2},{3})";
-    //    public static readonly string INSERT_BEES_LIST_TABLE_FORMAT = "INSERT INTO `bees_list`(`Id`, `game_id`, `type_id`, `Health`, `HitPoints`, `Name`) VALUES " +
-    //                    "({0},{1},{2},{3},{4},\"{5}\")";
-
         public void Save<T>(T obj)
         {
             if (obj is BeesGame)
@@ -35,7 +30,7 @@ namespace TrialTask_Bees.DataSaving
 
                     int bees_count = game.AlivedBeesCount();
 
-                    if (Insert(conn, ConfigurationManager.AppSettings["insertBeesGameTableFormat"]/*INSERT_BEES_GAME_TABLE_FORMAT*/,
+                    if (Insert(conn, ConfigurationManager.AppSettings["insertBeesGameTableFormat"],
                         game.Id,
                         game.HitCount,
                         game.TotalKilled,
@@ -50,7 +45,7 @@ namespace TrialTask_Bees.DataSaving
                                     currentBee.GetType() == typeof(QueenBee) ? 1 :
                                     currentBee.GetType() == typeof(WorkerBee) ? 2 :
                                     currentBee.GetType() == typeof(DroneBee) ? 3 : 0;
-                                if (!Insert(conn, ConfigurationManager.AppSettings["insertBeesListTableFormat"]/*INSERT_BEES_LIST_TABLE_FORMAT*/,
+                                if (!Insert(conn, ConfigurationManager.AppSettings["insertBeesListTableFormat"],
                                     currentBee.Id,
                                     game.Id,
                                     bee_type,
